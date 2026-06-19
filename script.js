@@ -1,106 +1,100 @@
-const getDices = document.getElementById('getDices');
+const roll = document.getElementById('roll');
 const diceElements = document.getElementsByClassName('diceElement');
 const points = document.getElementsByClassName('points');
-const sameDices = document.getElementsByClassName('sameDices');
+const xOfAKind = document.getElementsByClassName('xOfAKind');
 const street = document.getElementsByClassName('street');
 const fullHouse = document.getElementById('fullHouse');
 const chance = document.getElementById('chance');
-const yahtzee = document.getElementById('yahtzee');
+
+//Gooien van een dobbelstenen (te klein)
+
+//const rollDice = 1 + Math.floor(Math.random() * 6);
+
+//De worp met 5 dobbelstenen weergeven
+
+//worp = 
+
+//Weergeven van de bovenste vakken 1t/m6
+
+//Weergeven van de combinaties
+
+//Bereken of
+
+//Weergeven van de scores
+
+const rolls = 5; // gooien met 5 dobbelstenen in het spel Yahtzee
+let count = {}; // key: aantal ogen, value: aantal keer dat het aantal ogen is gegooid
+
+function newRoll () {
+    
+    count = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0,}; // reset de values van count
+    
+    rollDices(); // rollen van de dobbelstenen, het plaatsen van het resultaat in de dobbelstenentabel en de worp opslaan in count
+
+    calculateScores(); // (opnieuw) invullen van de scoretabel
+    // dit kan nog worden uitgebreid door bijvoorbeeld met een niet lege scoretabel te beginnen
+
+}
 
 function rollDices() {
 
-    const rolls = 5;
     const rolledNumbers = [];
-    const amounts = [];
 
-    let count = {
-        1: 0,
-        2: 0,
-        3: 0,
-        4: 0,
-        5: 0,
-        6: 0,
-    }
     for (let i = 0; i < rolls ; i++) {
 
         rolledNumbers[i] = 1 + Math.floor(Math.random() * 6);
-        //rolledNumbers[i] = 6;
-        //if (i < 2) {
-        //    rolledNumbers[i] = 2;
-        //} else {
-        //    rolledNumbers[i] = 3;
-        //}
         diceElements[i].innerHTML = rolledNumbers[i];
-
         count[rolledNumbers[i]]++;
 
     }
 
-    //Bereken het groote en kleinste aantal dezelfde dobbelstenen 
-    for (let key in count) {
-        amounts[key - 1] = count[key];
-    }
-    const maxSameDices = Math.max(...amounts);
-    const minSameDices = Math.min(...amounts.filter(value => value >= 1));
-
-    //Bereken de punten voor de nummercombinaties 1 t/m 6
-    for (let i = 1; i <= 6; i++) {
-        points[i-1].innerHTML = count[i] * i;
-    }
-
-    //Bereken de punten voor 3 of 4 gelijke dobbelstenen
-    for (let i = 0; i<2; i++) {
-        if ( maxSameDices >= 3 + i) {
-            sameDices[i].innerHTML = rolledNumbers.reduce(getSum);
-        } else {
-            sameDices[i].innerHTML = 0;
-        }
-    }
-
-    //Bereken de lengthe van de langste straat die is gegooid
-    let maxStreetLength = 1;
-    let streetLength = 1;
-    for (let i = 1; i<6; i++ ) {
-        if ( amounts[i] >= 1 && amounts[i-1] >= 1) {
-            streetLength++;
-        } else {
-            maxStreetLength = streetLength;
-            streetlength = 1;
-        }
-        if ( streetLength > maxStreetLength ) {
-            maxStreetLength = streetLength;
-        }
-    }
-
-    //Check of er een kleine of grote straat is gegooid
-    for (let i = 0; i<2; i++) {
-        if ( maxStreetLength >= 4 + i) {
-            street[i].innerHTML = 30 + 10 * i;
-        } else {
-            street[i].innerHTML = 0;
-        }
-    }
-
-    //Check of er een Full House is gegooid
-    if ( maxSameDices == 3 && minSameDices == 2 ) {
-        fullHouse.innerHTML = 25;
-    } else {
-        fullHouse.innerHTML = 0;
-    }
-
-    //Bereken de punten voor kans
-    chance.innerHTML = rolledNumbers.reduce(getSum);
-
-    //Check of er Yahtzee is gegooid
-    if ( maxSameDices == 5 ) {
-        yahtzee.innerHTML = 50;
-    } else {
-        yahtzee.innerHTML = 0;
-    }
-    
-    function getSum(total, value) { 
-        return total + value;
-    }
 }
 
-getDices.addEventListener('click', rollDices);
+//Berekenen totaal aantal ogen vanuit het count object
+function getSum(sum, value, index) { 
+    return sum + value * (index + 1);
+}
+
+function calculateScores() {
+
+    let amounts = Object.values(count); // hulparray met de als waarden de values van count
+
+    //Bereken de score voor de nummercombinaties 1 t/m 6
+    for (let i = 1; i <= 6; i++) {
+        points[i-1].innerHTML = amounts[i-1] * i;
+    }
+
+    //Bereken de score voor kans
+    chance.innerHTML = amounts.reduce(getSum);
+
+    //Check of er x gelijke zijn gegooid
+    const isXOfAKind = x => amounts.some(amount => amount >= x);
+
+    //Bereken de score voor drie, vier en vijf gelijke
+    xOfAKind[0].innerHTML = isXOfAKind(3) ? amounts.reduce(getSum) : 0;
+    xOfAKind[1].innerHTML = isXOfAKind(4) ? amounts.reduce(getSum) : 0;
+    xOfAKind[2].innerHTML = isXOfAKind(5) ? 50 : 0;
+
+    //Check of er een Full House is gegooid en bereken de score
+    const isFullHouse = amounts.includes(3) && amounts.includes(2);
+
+    fullHouse.innerHTML = isFullHouse ? 25 : 0;
+
+    //Check of een bepaald getal in de worp voorkomt
+    const has = (number) => count[number] > 0;
+
+    //Check of er een straat is gegooid
+    const isSmallStreet = has(1) && has(2) && has(3) && has(4) || 
+                        has(2) && has(3) && has(4) && has(5) ||
+                        has(3) && has(4) && has(5) && has(6);
+
+    const isBigStreet = has(1) && has(2) && has(3) && has(4) && has(5) || 
+                        has(2) && has(3) && has(4) && has(5) && has(6);
+
+    //Bereken de scores voor de straten
+    street[0].innerHTML = isSmallStreet ? 30 : 0;
+    street[1].innerHTML = isBigStreet ? 40 : 0;
+
+}
+
+roll.addEventListener('click', newRoll);
