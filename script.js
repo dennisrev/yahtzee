@@ -6,22 +6,6 @@ const street = document.getElementsByClassName('street');
 const fullHouse = document.getElementById('fullHouse');
 const chance = document.getElementById('chance');
 
-//Gooien van een dobbelstenen (te klein)
-
-//const rollDice = 1 + Math.floor(Math.random() * 6);
-
-//De worp met 5 dobbelstenen weergeven
-
-//worp = 
-
-//Weergeven van de bovenste vakken 1t/m6
-
-//Weergeven van de combinaties
-
-//Bereken of
-
-//Weergeven van de scores
-
 const rolls = 5; // gooien met 5 dobbelstenen in het spel Yahtzee
 let count = {}; // key: aantal ogen, value: aantal keer dat het aantal ogen is gegooid
 
@@ -48,11 +32,6 @@ function rollDices() {
 
     }
 
-}
-
-//Berekenen totaal aantal ogen vanuit het count object
-function getSum(sum, value, index) { 
-    return sum + value * (index + 1);
 }
 
 function calculateScores() {
@@ -88,13 +67,20 @@ function calculateScores() {
                         has(2) && has(3) && has(4) && has(5) ||
                         has(3) && has(4) && has(5) && has(6);
 
-    const isBigStreet = has(1) && has(2) && has(3) && has(4) && has(5) || 
-                        has(2) && has(3) && has(4) && has(5) && has(6);
+    const isBigStreet = has(2) && has(3) && has(4) && has(5) && ( has(1) || has(6) );
+
+    const isSmallStreet = has(3) && has(4) && 
+                        ( ( has(1) && has(2) ) || ( has(2) && has(5) ) || ( has(5) && has(6) ) );
 
     //Bereken de scores voor de straten
     street[0].innerHTML = isSmallStreet ? 30 : 0;
     street[1].innerHTML = isBigStreet ? 40 : 0;
 
+}
+
+//Berekenen totaal aantal ogen vanuit het count object
+function getSum(sum, value, index) { 
+    return sum + value * (index + 1);
 }
 
 roll.addEventListener('click', newRoll);
