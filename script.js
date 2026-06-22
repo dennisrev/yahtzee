@@ -36,6 +36,8 @@ function rollDices() {
 
 function calculateScores() {
 
+    //Jasper: gebruik hier rolledNumbers ipv amounts 
+    
     let amounts = Object.values(count); // hulparray met de als waarden de values van count
 
     //Bereken de score voor de nummercombinaties 1 t/m 6
@@ -54,6 +56,8 @@ function calculateScores() {
     xOfAKind[1].innerHTML = isXOfAKind(4) ? amounts.reduce(getSum) : 0;
     xOfAKind[2].innerHTML = isXOfAKind(5) ? 50 : 0;
 
+    //Jasper: gebruik losse ID's ipv een class
+
     //Check of er een Full House is gegooid en bereken de score
     const isFullHouse = amounts.includes(3) && amounts.includes(2);
 
@@ -63,9 +67,8 @@ function calculateScores() {
     const has = (number) => count[number] > 0;
 
     //Check of er een straat is gegooid
-    const isSmallStreet = has(1) && has(2) && has(3) && has(4) || 
-                        has(2) && has(3) && has(4) && has(5) ||
-                        has(3) && has(4) && has(5) && has(6);
+
+    //Jasper: maak een functie isStreet (en dan met rolledNumbers)
 
     const isBigStreet = has(2) && has(3) && has(4) && has(5) && ( has(1) || has(6) );
 
